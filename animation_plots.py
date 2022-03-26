@@ -22,6 +22,7 @@ class WavePlot:
         self.line1, = ax1.plot(self.x, np.cos(self.x), color=self.colors[0])
         self.line2, = ax2.plot(self.x, np.cos(self.x), color=self.colors[1])
         self.line3, = ax3.plot(self.x, np.cos(self.x), color=self.colors[2])
+        #self.point,  = self.ax4.plot(self.x, np.cos(self.x), 'r')
 
     def pin_window(self, window):
         self.win = window
@@ -43,18 +44,24 @@ class WavePlot:
         t = i * dt
         y1 = A*np.cos(w1*t - k1*self.x)
         y2 = np.cos(k2 * self.x - w2 * t)
-        #etag = 2 * np.cos((k2 - k1) * self.x / 2. - (w2 - w1) * t / 2.)
-        #line0.set_data(x, eta1 + eta2)
+
+
+        # v = (w2 - w1) / (k2 - k1)
+        # vg = (w2 + w1) / (k2 + k1)
+        # deltg = 10 if v <= 0 else 10
+
+
         self.line1.set_data(self.x, y1)
         self.line2.set_data(self.x, y2)
         self.line3.set_data(self.x, y1+y2)
-        self.ax4.plot(self.x, y1, color=self.colors[0])#, xlim=[-1, 1])
+        self.ax4.plot(self.x, y1, color=self.colors[0])
         self.ax4.plot(self.x, y2, color=self.colors[1])
         self.ax4.plot(self.x, y1+y2, color=self.colors[2])
         self.ax4.set_ylim(self.y_axis_lim)
+        #self.point.set_data(t * cgc - 10, 0)
         # line1.set_data(x, A*np.sin(x+i/10.0))  # update the data
         # line2.set_ydata(A/2*np.sin(x+i/10.0))
-        return self.line1, self.line2, self.line3
+        return self.line1, self.line2, self.line3#, self.point
 
 
 class PrepOption:

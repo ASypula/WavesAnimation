@@ -17,11 +17,6 @@ colors = ["lightblue", "slateblue", "lightslategray"]
 # (tzn pokazanie przemieszczania stałej fazy i całej grupy za pomocą kropki)
 
 
-# cg = (w2 - w1) / (k2 - k1)
-# cgc = (w2 + w1) / (k2 + k1)
-
-#deltg = 10 if cg <= 0 else 10.
-
 
 anim_plot = WavePlot(colors)
 anim_window = WaveAnimation(anim_plot)

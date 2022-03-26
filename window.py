@@ -18,6 +18,7 @@ class WaveAnimation:
         canvas.get_tk_widget().place(x=0*SIZE, y=0*SIZE)
         self.add_scales()
         self.add_example_buttons()
+        #TODO: change below prepoption
         self.sel_option=PrepOption(0, 0, 0, 0, 0)
 
     def add_scales(self, min_wave_v=0.0, max_wave_v=2.0, min_ang_freq=0.0, max_ang_freq=2.0):
@@ -33,13 +34,13 @@ class WaveAnimation:
         t_intrvl = 0.5
         resol = 0.5
         self.wave_v_scale1 = tk.Scale(master=self.root, from_=min_wave_v, to=max_wave_v, tickinterval=t_intrvl, resolution=resol, orient=tk.HORIZONTAL)
-        self.wave_v_scale1.place(x=0, y=0)
+        self.wave_v_scale1.place(x=900, y=400)
         self.wave_v_scale2 = tk.Scale(master=self.root, from_=min_wave_v, to=max_wave_v, tickinterval=t_intrvl, resolution=resol, orient=tk.HORIZONTAL)
-        self.wave_v_scale2.place(x=0, y=50)
+        self.wave_v_scale2.place(x=900, y=460)
         self.ang_freq_scale1 = tk.Scale(master=self.root, from_=min_ang_freq, to=max_ang_freq, tickinterval=t_intrvl, resolution=resol, orient=tk.HORIZONTAL)
-        self.ang_freq_scale1.place(x=50, y=100) 
+        self.ang_freq_scale1.place(x=900, y=520) 
         self.ang_freq_scale2 = tk.Scale(master=self.root, from_=min_ang_freq, to=max_ang_freq, tickinterval=t_intrvl, resolution=resol, orient=tk.HORIZONTAL)
-        self.ang_freq_scale2.place(x=90, y=100)
+        self.ang_freq_scale2.place(x=900, y=580)
 
     def add_example_buttons(self):
         self.var = tk.IntVar()
@@ -57,10 +58,10 @@ class WaveAnimation:
         opt_but1 = tk.Radiobutton(self.root, text=text1, variable=self.var, value=option1.value, command=self.on_select_button)
         opt_but2 = tk.Radiobutton(self.root, text=text2, variable=self.var, value=option2.value, command=self.on_select_button)
         opt_but3 = tk.Radiobutton(self.root, text=text3, variable=self.var, value=option3.value, command=self.on_select_button)
-        opt_but0.place(x=600, y=0)
-        opt_but1.place(x=600, y=100)
-        opt_but2.place(x=600, y=200)
-        opt_but3.place(x=600, y=300)
+        opt_but0.place(x=900, y=0)
+        opt_but1.place(x=900, y=70)
+        opt_but2.place(x=900, y=140)
+        opt_but3.place(x=900, y=210)
         self.options = [option0, option1, option2, option3]
 
     def on_select_button(self):
