@@ -7,6 +7,9 @@ import matplotlib.animation as animation
 from window import WaveAnimation
 from animation_plots import WavePlot
 
+colors = ["lightblue", "slateblue", "lightslategray"]
+# https://matplotlib.org/stable/gallery/color/named_colors.html
+
 # https://www.youtube.com/watch?v=ePJdV75fT5o
 # Liczba fal 2 lub 3 i dla każdej możliwość ustawienia częstości i wektora falowego 
 # (omega i k). Zmiana amplitudy i fazy nie jest konieczna. I kilka ciekawych presetów: 
@@ -14,22 +17,13 @@ from animation_plots import WavePlot
 # (tzn pokazanie przemieszczania stałej fazy i całej grupy za pomocą kropki)
 
 
-# Wave 1.
-k1, w1 = 10., 5.
-c1 = w1 / k1
+# cg = (w2 - w1) / (k2 - k1)
+# cgc = (w2 + w1) / (k2 + k1)
 
-# Wave 2.
-k2, w2 = 3., 4.5
-c2 = w2 / k2
+#deltg = 10 if cg <= 0 else 10.
 
-cg = (w2 - w1) / (k2 - k1)
-cgc = (w2 + w1) / (k2 + k1)
 
-deltg = 10 if cg <= 0 else 10.
-
-x = np.arange(0, 10*np.pi, 0.01)        # x-array
-
-anim_plot = WavePlot()
+anim_plot = WavePlot(colors)
 anim_window = WaveAnimation(anim_plot)
 
 

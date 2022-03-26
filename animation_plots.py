@@ -1,27 +1,33 @@
-import tkinter as tk
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
 
 
 class WavePlot:
-    def __init__(self):
+    def __init__(self, plot_colors, y_axis_lim=[-1.1, 1.1]):
         self.fig = plt.figure(figsize=(9, 7))
         self.x = np.arange(0, 10*np.pi, 0.01)
+        self.colors = plot_colors
+        self.y_axis_lim = y_axis_lim
         self.add_lines()
 
+
     def add_lines(self):
-        ax1 = self.fig.add_subplot(311)
-        ax2 = self.fig.add_subplot(312)
-        ax3 = self.fig.add_subplot(313)
-        self.line1, = ax1.plot(self.x, np.cos(self.x), color='r')
-        self.line2, = ax2.plot(self.x, np.sin(self.x))
-        self.line3, = ax3.plot(self.x, np.sin(self.x))
+        ax1 = self.fig.add_subplot(411)
+        ax2 = self.fig.add_subplot(412)
+        ax3 = self.fig.add_subplot(413)
+        self.ax4 = self.fig.add_subplot(414)
+        ax1.set_ylim(self.y_axis_lim)
+        ax2.set_ylim(self.y_axis_lim)
+        ax3.set_ylim(self.y_axis_lim)
+        self.line1, = ax1.plot(self.x, np.cos(self.x), color=self.colors[0])
+        self.line2, = ax2.plot(self.x, np.cos(self.x), color=self.colors[1])
+        self.line3, = ax3.plot(self.x, np.cos(self.x), color=self.colors[2])
 
     def pin_window(self, window):
         self.win = window
 
     def animate(self, i):
+        self.ax4.clear()
         A = 1
         dt = 0.1
         if self.win.sel_option.value == 0:
@@ -35,13 +41,17 @@ class WavePlot:
             k1 = self.win.sel_option.wave_v1
             k2 = self.win.sel_option.wave_v2
         t = i * dt
-        eta1 = A*np.cos(w1*t - k1*self.x)
-        eta2 = np.cos(k2 * self.x - w2 * t)
-        etag = 2 * np.cos((k2 - k1) * self.x / 2. - (w2 - w1) * t / 2.)
+        y1 = A*np.cos(w1*t - k1*self.x)
+        y2 = np.cos(k2 * self.x - w2 * t)
+        #etag = 2 * np.cos((k2 - k1) * self.x / 2. - (w2 - w1) * t / 2.)
         #line0.set_data(x, eta1 + eta2)
-        self.line1.set_data(self.x, eta1)
-        self.line2.set_data(self.x, eta2)
-        self.line3.set_data(self.x, eta1+eta2)
+        self.line1.set_data(self.x, y1)
+        self.line2.set_data(self.x, y2)
+        self.line3.set_data(self.x, y1+y2)
+        self.ax4.plot(self.x, y1, color=self.colors[0])#, xlim=[-1, 1])
+        self.ax4.plot(self.x, y2, color=self.colors[1])
+        self.ax4.plot(self.x, y1+y2, color=self.colors[2])
+        self.ax4.set_ylim(self.y_axis_lim)
         # line1.set_data(x, A*np.sin(x+i/10.0))  # update the data
         # line2.set_ydata(A/2*np.sin(x+i/10.0))
         return self.line1, self.line2, self.line3

@@ -6,14 +6,16 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from animation_plots import PrepOption
 
+SIZE = 1
+
 class WaveAnimation:
     def __init__(self, anim_fig):
         self.root = tk.Tk()
-        self.root.geometry("1200x800")
+        self.root.geometry(f"{1200*SIZE}x{800*SIZE}")
         label = tk.Label(self.root, text="Wave Simulation").grid(column=0, row=0)
         self.fig = anim_fig.fig
         canvas = FigureCanvasTkAgg(self.fig, master=self.root)
-        canvas.get_tk_widget().grid(column=0,row=1)
+        canvas.get_tk_widget().place(x=0*SIZE, y=0*SIZE)
         self.add_scales()
         self.add_example_buttons()
         self.sel_option=PrepOption(0, 0, 0, 0, 0)
