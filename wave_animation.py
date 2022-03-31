@@ -7,7 +7,7 @@ import matplotlib.animation as animation
 from window import WaveAnimation
 from animation_plots import WavePlot
 
-colors = ["lightblue", "slateblue", "lightslategray"]
+colors = ["lightblue", "slateblue", "lightslategray", "black"]
 # https://matplotlib.org/stable/gallery/color/named_colors.html
 
 # https://www.youtube.com/watch?v=ePJdV75fT5o
@@ -22,7 +22,7 @@ anim_plot = WavePlot(colors)
 anim_window = WaveAnimation(anim_plot)
 
 
-ani = animation.FuncAnimation(anim_window.fig, anim_plot.animate, frames=np.arange(1, 200), interval=25, blit=False)
+ani = animation.FuncAnimation(anim_window.fig, anim_plot.animate, frames=np.arange(1, 200), interval=25)
 anim_plot.pin_window(anim_window)
 #anim_plot.draw()
 anim_window.run()

@@ -19,7 +19,7 @@ class WaveAnimation:
         self.add_scales()
         self.add_example_buttons()
         #TODO: change below prepoption
-        self.sel_option=PrepOption(0, 0, 0, 0, 0)
+        self.sel_option=PrepOption(0, 0, 0, 0, 0, 0, 0)
 
     def add_scales(self, min_wave_v=0.0, max_wave_v=2.0, min_ang_freq=0.0, max_ang_freq=2.0):
         """
@@ -37,18 +37,22 @@ class WaveAnimation:
         self.wave_v_scale1.place(x=900, y=400)
         self.wave_v_scale2 = tk.Scale(master=self.root, from_=min_wave_v, to=max_wave_v, tickinterval=t_intrvl, resolution=resol, orient=tk.HORIZONTAL)
         self.wave_v_scale2.place(x=900, y=460)
+        self.wave_v_scale3 = tk.Scale(master=self.root, from_=min_wave_v, to=max_wave_v, tickinterval=t_intrvl, resolution=resol, orient=tk.HORIZONTAL)
+        self.wave_v_scale3.place(x=900, y=500)
         self.ang_freq_scale1 = tk.Scale(master=self.root, from_=min_ang_freq, to=max_ang_freq, tickinterval=t_intrvl, resolution=resol, orient=tk.HORIZONTAL)
         self.ang_freq_scale1.place(x=900, y=520) 
         self.ang_freq_scale2 = tk.Scale(master=self.root, from_=min_ang_freq, to=max_ang_freq, tickinterval=t_intrvl, resolution=resol, orient=tk.HORIZONTAL)
         self.ang_freq_scale2.place(x=900, y=580)
+        self.ang_freq_scale3 = tk.Scale(master=self.root, from_=min_ang_freq, to=max_ang_freq, tickinterval=t_intrvl, resolution=resol, orient=tk.HORIZONTAL)
+        self.ang_freq_scale3.place(x=900, y=640)
 
     def add_example_buttons(self):
         self.var = tk.IntVar()
-        # PrepOption(wave_v_1, ang_freq_1, wave_v_2, ang_freq_2, val)
-        option0 = PrepOption(0, 0, 0, 0, 0)
-        option1 = PrepOption(-1, 1, 2, 2, 1)
-        option2 = PrepOption(6, 1, 2, 2, 2)
-        option3 = PrepOption(1, 1, 2, 2, 3)
+        # PrepOption(wave_v_1, ang_freq_1, wave_v_2, ang_freq_2, wave_v_3, ang_freq_3, val)
+        option0 = PrepOption(0, 0, 0, 0, 0, 0, 0)
+        option1 = PrepOption(-1, 1, 2, 2, 1, 1, 1)
+        option2 = PrepOption(6, 1, 2, 2, 1, 1, 2)
+        option3 = PrepOption(1, 1, 2, 2, 0, 0, 3)
         #button 0 used for custom settings through scales
         text0 = f"Custom parameters"
         text1 = f"k1 = {option1.wave_v1}, w1 = {option1.ang_freq1}\nk2 = {option1.wave_v2}, w2 = {option1.ang_freq2}"
