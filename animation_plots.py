@@ -1,13 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 class WavePlot:
     def __init__(self, plot_colors, y_axis_lim=[-1.1, 1.1]):
         self.fig = plt.figure(figsize=(9, 7))
         self.x = np.arange(0, 10*np.pi, 0.01)
         self.colors = plot_colors
         self.y_axis_lim = y_axis_lim
+        self.xc = 0
         self.add_lines()
 
 
@@ -26,7 +26,8 @@ class WavePlot:
         self.line4, = ax4.plot(self.x, np.cos(self.x), color=self.colors[3])
 
         kw1 = dict(alpha=0.5, linestyle='none', marker='o')
-        self.point3,  = ax3.plot([], [], 'r', **kw1)
+        self.point4_p,  = ax4.plot([], [], 'r', **kw1)
+        self.point4_g,  = ax4.plot([], [], 'b', **kw1)
 
     def pin_window(self, window):
         self.win = window
@@ -49,7 +50,7 @@ class WavePlot:
             k2 = self.win.sel_option.wave_v2
             k3 = self.win.sel_option.wave_v3
         t = i * dt
-        y1 = A*np.cos(k1*self.x - w1*t)
+        y1 = A*np.cos(k1 * self.x - w1 * t)
         y2 = A*np.cos(k2 * self.x - w2 * t)
         y3 = A*np.cos(k3 * self.x - w3 * t)
 
@@ -59,18 +60,22 @@ class WavePlot:
             cgc=1
         if k1==0: 
             k1=1
-        c1 = w1 / k1
-        
+        #cg = (w2 - w1) / (k2 - k1)
+        #cgc = (w2 + w1) / (k2 + k1)
 
-        # v = (w2 - w1) / (k2 - k1)
-        # vg = (w2 + w1) / (k2 + k1)
+        # v-g = (w2 - w1) / (k2 - k1)
+        # phase velocity
+        v_p = (w1+w2+w3) / (k1+k2+k3)
+        print(self.xc)
+        self.xc+=0.1
+        dd = A*np.cos((k1+k2+k3) * self.xc - (w1+w2+w3) * t)
         # deltg = 10 if v <= 0 else 10
 
-        self.point3.set_data(t * c1, 0)
+        self.point4_p.set_data(self.xc, dd)
         self.line1.set_data(self.x, y1)
         self.line2.set_data(self.x, y2)
         self.line3.set_data(self.x, y3)
-        self.line4.set_data(self.x, y1+y2)
+        self.line4.set_data(self.x, y1+y2+y3)
 
         
         return self.line1, self.line2, self.line3, self.line4

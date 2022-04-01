@@ -1,8 +1,4 @@
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.figure import Figure
-import tkinter as tk
 import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from window import WaveAnimation
 from animation_plots import WavePlot
@@ -24,5 +20,4 @@ anim_window = WaveAnimation(anim_plot)
 
 ani = animation.FuncAnimation(anim_window.fig, anim_plot.animate, frames=np.arange(1, 200), interval=25)
 anim_plot.pin_window(anim_window)
-#anim_plot.draw()
 anim_window.run()
