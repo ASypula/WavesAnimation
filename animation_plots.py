@@ -1,17 +1,19 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 class WavePlot:
-    def __init__(self, plot_colors, y_axis_lim=[-1.1, 1.1]):
+    def __init__(self, plot_colors, y_axis_lim=[-1.1, 1.1], y_lim_times=3):
         self.fig = plt.figure(figsize=(9, 7))
+        self.fig.suptitle("Waves")
         self.x = np.arange(0, 10*np.pi, 0.01)
         self.colors = plot_colors
         self.y_axis_lim = y_axis_lim
-        self.xc = 0
-        self.add_lines()
+        self.w_p, self.k_p = 0, 0
+        self.add_lines(y_lim_times)
 
 
-    def add_lines(self):
+    def add_lines(self, y_lim_times):
         ax1 = self.fig.add_subplot(411)
         ax2 = self.fig.add_subplot(412)
         ax3 = self.fig.add_subplot(413)
@@ -19,7 +21,7 @@ class WavePlot:
         ax1.set_ylim(self.y_axis_lim)
         ax2.set_ylim(self.y_axis_lim)
         ax3.set_ylim(self.y_axis_lim)
-        ax4.set_ylim(self.y_axis_lim)
+        ax4.set_ylim([y_lim_times*y for y in self.y_axis_lim])
         self.line1, = ax1.plot(self.x, np.cos(self.x), color=self.colors[0])
         self.line2, = ax2.plot(self.x, np.cos(self.x), color=self.colors[1])
         self.line3, = ax3.plot(self.x, np.cos(self.x), color=self.colors[2])
@@ -54,31 +56,33 @@ class WavePlot:
         y2 = A*np.cos(k2 * self.x - w2 * t)
         y3 = A*np.cos(k3 * self.x - w3 * t)
 
-        if k2+k1 != 0: 
-            cgc = (w2 + w1) / (k2 + k1)
-        else:
-            cgc=1
-        if k1==0: 
-            k1=1
-        #cg = (w2 - w1) / (k2 - k1)
-        #cgc = (w2 + w1) / (k2 + k1)
+        self.w_c = w1+w2+w3
+        self.k_c = k1+k2+k3
+        # dw = w_current - w_previous
+        self.dw = self.w_c - self.w_p
+        self.dk = self.k_c - self.k_p
 
-        # v-g = (w2 - w1) / (k2 - k1)
         # phase velocity
-        v_p = (w1+w2+w3) / (k1+k2+k3)
-        print(self.xc)
-        self.xc+=0.1
-        dd = A*np.cos((k1+k2+k3) * self.xc - (w1+w2+w3) * t)
-        # deltg = 10 if v <= 0 else 10
+        if k2+k1+k3 != 0: 
+            v_p = (w2 + w1) / (k2 + k1)
+        else:
+            v_p=1
+        if k2-k1==0 or self.dk==0:
+            v_g = 1
+        else:
+            v_g = self.dw/self.dk
 
-        self.point4_p.set_data(self.xc, dd)
+        self.point4_p.set_data(v_p*t, 0)
+        self.point4_g.set_data(v_g*t, -0.25)
         self.line1.set_data(self.x, y1)
         self.line2.set_data(self.x, y2)
         self.line3.set_data(self.x, y3)
         self.line4.set_data(self.x, y1+y2+y3)
 
-        
-        return self.line1, self.line2, self.line3, self.line4
+        self.w_p = self.w_c
+        self.k_p = self.k_c
+
+        return self.line1, self.line2, self.line3, self.line4, self.point4_p
 
 
 class PrepOption:

@@ -12,7 +12,7 @@ class WaveAnimation:
     def __init__(self, anim_fig):
         self.root = tk.Tk()
         self.root.geometry(f"{int(1200*SIZE)}x{int(700*SIZE)}")
-        label = tk.Label(self.root, text="Wave Simulation").grid(column=0, row=0)
+        label = tk.Label(self.root, text="Wave Simulation").place(x=0, y=0)
         self.fig = anim_fig.fig
         canvas = FigureCanvasTkAgg(self.fig, master=self.root)
         canvas.get_tk_widget().place(x=0*SIZE, y=0*SIZE)
@@ -32,7 +32,7 @@ class WaveAnimation:
             @param max_ang_freq: maximum value for angular frequency
         """
         t_intrvl = 0.5
-        resol = 0.25
+        resol = 0.1
         x_cord_k = int(850*SIZE)
         x_cord_w = int(1000*SIZE)
         y_beg = 350
