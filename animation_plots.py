@@ -3,13 +3,16 @@ import matplotlib.pyplot as plt
 
 
 class WavePlot:
-    def __init__(self, plot_colors, y_axis_lim=[-1.1, 1.1], y_lim_times=3):
+    def __init__(self, plot_colors, y_axis_lim=[-1.1, 1.1], y_lim_times=3, max_x=30):
         self.fig = plt.figure(figsize=(9, 7))
         self.fig.suptitle("Waves")
         self.x = np.arange(0, 10*np.pi, 0.01)
         self.colors = plot_colors
         self.y_axis_lim = y_axis_lim
         self.w_p, self.k_p = 0, 0
+        self.max_x = max_x
+        self.max_x_p = max_x
+        self.max_x_g = max_x
         self.add_lines(y_lim_times)
 
 
@@ -58,22 +61,42 @@ class WavePlot:
 
         self.w_c = w1+w2+w3
         self.k_c = k1+k2+k3
+
         # dw = w_current - w_previous
         self.dw = self.w_c - self.w_p
         self.dk = self.k_c - self.k_p
 
         # phase velocity
-        if k2+k1+k3 != 0: 
-            v_p = (w2 + w1) / (k2 + k1)
+        if self.k_c != 0: 
+            v_p = self.w_c/self.k_c
+            point_p = v_p*t
+            if point_p > self.max_x:
+                point_p -= self.max_x_p
+                self.max_x_p += self.max_x
         else:
-            v_p=1
+            point_p = 0
+
+        # if self.dk != 0:
+        #     v_g = self.dw/self.dk
+        #     point_g = v_g*t
+        #     if point_g>self.max_x:
+        #         point_g -= self.max_x
+        #         self.max_x_g+=self.max_x
+        # else:
+        #     point_g = 1
+
+        #TODO: calculating group velocity
         if k2-k1==0 or self.dk==0:
             v_g = 1
         else:
             v_g = self.dw/self.dk
 
-        self.point4_p.set_data(v_p*t, 0)
-        self.point4_g.set_data(v_g*t, -0.25)
+        point_g = v_g*t
+
+        print(point_g)
+
+        self.point4_p.set_data(point_p, 0)
+        self.point4_g.set_data(point_g, -0.25)
         self.line1.set_data(self.x, y1)
         self.line2.set_data(self.x, y2)
         self.line3.set_data(self.x, y3)
