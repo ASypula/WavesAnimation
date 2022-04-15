@@ -1,12 +1,11 @@
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.figure import Figure
 import tkinter as tk
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
 from animation_plots import PrepOption
 
+# If size=1, default window is 1200x700
+# Setting different size adjusts the GUI accordingly
 SIZE = 1.1
+
 
 class WaveAnimation:
     def __init__(self, anim_fig):
@@ -19,7 +18,7 @@ class WaveAnimation:
         self.add_scales()
         self.add_example_buttons()
         #TODO: change below prepoption
-        self.sel_option=PrepOption(0, 0, 0, 0, 0, 0, 0)
+        self.sel_option = PrepOption(0, 0, 0, 0, 0, 0, 0)
 
     def add_scales(self, min_wave_v=-1.0, max_wave_v=1.0, min_ang_freq=-1.0, max_ang_freq=1.0):
         """
@@ -40,7 +39,7 @@ class WaveAnimation:
         s_text = tk.Label(self.root, text="Setting custom k and w")
         s_text.place(x=x_cord_k-20, y=300)
         slider_len = 150
-        #TODO: Adding third wave scales + y cord
+        
         self.wave_v_scale1 = tk.Scale(master=self.root, from_=min_wave_v, to=max_wave_v, tickinterval=t_intrvl, resolution=resol, orient=tk.HORIZONTAL, label="k1", length=slider_len)
         self.wave_v_scale1.place(x=x_cord_k, y=y_beg)
         self.wave_v_scale2 = tk.Scale(master=self.root, from_=min_wave_v, to=max_wave_v, tickinterval=t_intrvl, resolution=resol, orient=tk.HORIZONTAL, label="k2", length=slider_len)
@@ -67,7 +66,7 @@ class WaveAnimation:
         option2 = PrepOption(6, 1, 2, 2, 1, 1, 2)
         option3 = PrepOption(1, 1, 2, 2, 0, 0, 3)
         # button 0 used for custom settings through scales
-        text0 = f"Custom parameters"
+        text0 = "Custom parameters"
         text1 = f"k1  = {option1.wave_v1} \tk2  = {option1.wave_v2} \tk3  = {option1.wave_v3} \nw1 = {option1.ang_freq1} \tw2 = {option1.ang_freq2} \tw3 = {option1.ang_freq3}"
         text2 = f"k1  = {option2.wave_v1} \tk2  = {option2.wave_v2} \tk3  = {option2.wave_v3} \nw1 = {option2.ang_freq1} \tw2 = {option2.ang_freq2} \tw3 = {option2.ang_freq3}"
         text3 = f"k1  = {option3.wave_v1} \tk2  = {option3.wave_v2} \tk3  = {option3.wave_v3} \nw1 = {option3.ang_freq1} \tw2 = {option3.ang_freq2} \tw3 = {option3.ang_freq3}"
@@ -86,5 +85,3 @@ class WaveAnimation:
 
     def run(self):
         tk.mainloop()
-
-
