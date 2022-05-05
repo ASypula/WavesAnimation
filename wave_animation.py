@@ -11,7 +11,7 @@ interval = 100
 # https://www.youtube.com/watch?v=ePJdV75fT5o
 # Liczba fal 2 lub 3 i dla każdej możliwość ustawienia częstości i wektora falowego 
 # (omega i k). Zmiana amplitudy i fazy nie jest konieczna. I kilka ciekawych presetów: 
-# prędkość grupowa większa, mniejsza lub równa 0. Wydaje mi się, że ta forma prezentacji z nagrania jest idealna 
+# prędkość grupowa większa, mniejsza lub równa 0. Wsydaje mi się, że ta forma prezentacji z nagrania jest idealna 
 # (tzn pokazanie przemieszczania stałej fazy i całej grupy za pomocą kropki)
 
 anim_plot = WavePlot(colors)

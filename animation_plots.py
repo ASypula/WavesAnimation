@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+import sys
+np.set_printoptions(threshold=sys.maxsize)
 
 class WavePlot:
     def __init__(self, plot_colors, A=1, y_axis_lim=[-1.1, 1.1], y_lim_times=2, max_x=30):
@@ -14,7 +16,7 @@ class WavePlot:
                 @param max_x = upper limit of x axis, starting value is 0 """
         self.fig = plt.figure(figsize=(9, 7))
         self.fig.suptitle("Waves")
-        self.x = np.arange(0, 10*np.pi, 0.01)
+        self.x = np.arange(0, 10*np.pi, 0.05)
         self.A = A
         self.colors = plot_colors
         self.y_axis_lim = y_axis_lim
@@ -22,6 +24,13 @@ class WavePlot:
         self.max_x = max_x
         self.max_x_p = max_x
         self.max_x_g = max_x
+
+        # TODO: changes
+        self.changed_params = True      # indicates whether any parameters: w or k were changed during given iteration
+        self.previous_params = [0, 0, 0, 0, 0, 0]
+        self.curr_y = 0
+        self.idx_y_vel_g = 0
+        self.min_idx = 0
         self.add_lines(y_lim_times)
 
     def add_lines(self, y_lim_times):
@@ -29,7 +38,7 @@ class WavePlot:
             First three for customized or preset waves, 
             fourth line for the resulting wave.
             @param y_lim_times: how many times resulting wave's y axis range 
-                         differs from the other range"""
+                                differs from the basic range"""
         ax1 = self.fig.add_subplot(411)
         ax2 = self.fig.add_subplot(412)
         ax3 = self.fig.add_subplot(413)
@@ -68,6 +77,7 @@ class WavePlot:
             k2 = self.win.wave_v_scale2.get()
             k3 = self.win.wave_v_scale3.get()
 
+
         # taking waves' w and k from the selected preset option
         else:
             w1 = self.win.sel_option.ang_freq1
@@ -76,29 +86,33 @@ class WavePlot:
             k1 = self.win.sel_option.wave_v1
             k2 = self.win.sel_option.wave_v2
             k3 = self.win.sel_option.wave_v3
-        
+      
         dt = 0.1
         t = i * dt
         y1 = self.A*np.cos(k1 * self.x - w1 * t)
         y2 = self.A*np.cos(k2 * self.x - w2 * t)
         y3 = self.A*np.cos(k3 * self.x - w3 * t)
 
-        self.w_c = w1+w2+w3
-        self.k_c = k1+k2+k3
+        sum_y = y1 + y2 + y3
+        
+        # self.w_c = w1+w2+w3
+        # self.k_c = k1+k2+k3
 
-        # dw = w_current - w_previous
-        self.dw = self.w_c - self.w_p
-        self.dk = self.k_c - self.k_p
+        # # dw = w_current - w_previous
+        # self.dw = self.w_c - self.w_p
+        # self.dk = self.k_c - self.k_p
 
-        # phase velocity
-        if self.k_c != 0: 
-            v_p = self.w_c/self.k_c
-            point_p = v_p*t
-            if point_p > self.max_x:
-                point_p -= self.max_x_p
-                self.max_x_p += self.max_x
-        else:
-            point_p = 0
+        # # phase velocity
+        # if self.k_c != 0: 
+        #     v_p = self.w_c/self.k_c
+        #     point_p = v_p*t
+        #     if point_p > self.max_x:
+        #         point_p -= self.max_x_p
+        #         self.max_x_p += self.max_x
+        # else:
+        #     point_p = 0
+
+        point_p = 0
 
         # if self.dk != 0:
         #     v_g = self.dw/self.dk
@@ -109,27 +123,80 @@ class WavePlot:
         # else:
         #     point_g = 1
 
-        #TODO: calculating group velocity
-        if k2-k1==0 or self.dk==0:
-            v_g = 1
+        # TODO: calculating group velocity
+        if not w1 and not w2 and not w3:
+            v_g = 0
         else:
-            v_g = self.dw/self.dk
+            v_g = calc_group_vel(w1, w2, w3, k1, k2, k3)
 
-        point_g = v_g*t
+        point_g = (v_g*t) % self.max_x
+
+        # TODO: changes
+        new_params = [w1, w2, w3, k1, k2, k3]
+        self.just_changed = not np.array_equal(self.previous_params, new_params)
+        print(f"{t}, {self.just_changed}")
+        if self.just_changed:
+            self.curr_y = sum_y[self.idx_y_vel_g]
+            self.min_idx = 0
+        else:
+
+            absolute_val_array = get_array(sum_y, self.curr_y, self.min_idx, 3, 10)
+            self.min_idx = absolute_val_array.argmin()
+            print(self.min_idx)
+            self.curr_val = sum_y[self.min_idx]
+            print(self.curr_val)
+            print(np.array(sum_y))
+        #     while i < 10:
+        #         if sum_y[self.idx_y_vel_g] == self.curr_y:
+        #             break    
+        #         self.idx_y_vel_g += 1
+        #         i+=1
+        #     if self.idx_y_vel_g == len(sum_y):
+        #         self.idx_y_vel_g = 0
+        #     self.curr_y = sum_y[self.idx_y_vel_g]
+
+        self.previous_params = new_params
+        self.min_idx = self.min_idx%len(self.x)
+        if k1+k2+k3 == 0:
+            point_p = 0
+        else:
+            point_p = t*(w1+w2+w3/(k1+k2+k3))
+        #point_p = self.x[self.min_idx]   
 
         # setting data for all waves
         self.line1.set_data(self.x, y1)
         self.line2.set_data(self.x, y2)
         self.line3.set_data(self.x, y3)
-        self.line4.set_data(self.x, y1+y2+y3)
+        self.line4.set_data(self.x, sum_y)
 
         self.point4_p.set_data(point_p, 0)
-        self.point4_g.set_data(point_g, -0.25)
-
-        self.w_p = self.w_c
-        self.k_p = self.k_c
+        self.point4_g.set_data(point_g, 0)
 
         return self.line1, self.line2, self.line3, self.line4, self.point4_p
+
+def get_array(arr, value, idx, interval, fill_val):
+    result_arr = np.abs(arr - value)
+    if idx-interval < 0:
+        beg = idx + interval
+        end = len(arr)+idx - interval
+        result_arr[beg+1:end] = fill_val
+    elif idx + interval >= len(arr):
+        beg = interval + idx - len(arr)
+        end = idx - interval
+        result_arr[beg+1:end] = fill_val
+    else:
+        result_arr[:idx+1] = fill_val
+        # result_arr[:idx - interval] = fill_val
+        result_arr[idx + interval+1:] = fill_val
+    return result_arr
+
+
+def calc_group_vel(w1, w2, w3, k1, k2, k3):
+    """ w(k) = ak + b ; a - group velocity"""
+    w = np.array([w1, w2, w3])
+    k = np.array([k1, k2, k3])
+    a, b = np.polyfit(k, w, 1)
+    return a
 
 
 class PrepOption:
