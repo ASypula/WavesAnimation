@@ -60,11 +60,13 @@ class WaveAnimation:
         l_text.place(x=x_cord-50, y=20)
         # l.config(font =("Courier", 14))
         self.var = tk.IntVar()
+
         # PrepOption(wave_v_1, ang_freq_1, wave_v_2, ang_freq_2, wave_v_3, ang_freq_3, val)
         option0 = PrepOption(0, 0, 0, 0, 0, 0, 0)
         option1 = PrepOption(-1, 1, 2, 2, 1, 1, 1)
         option2 = PrepOption(6, 1, 2, 2, 1, 1, 2)
         option3 = PrepOption(1, 1, 2, 2, 0, 0, 3)
+        
         # button 0 used for custom settings through scales
         text0 = "Custom parameters"
         text1 = f"k1  = {option1.wave_v1} \tk2  = {option1.wave_v2} \tk3  = {option1.wave_v3} \nw1 = {option1.ang_freq1} \tw2 = {option1.ang_freq2} \tw3 = {option1.ang_freq3}"

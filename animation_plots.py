@@ -5,7 +5,7 @@ import sys
 np.set_printoptions(threshold=sys.maxsize)
 
 class WavePlot:
-    def __init__(self, plot_colors, A=1, y_axis_lim=[-1.1, 1.1], y_lim_times=2, max_x=30):
+    def __init__(self, plot_colors, A=1, y_axis_lim=[-1.1, 1.1], y_lim_times=3, max_x=30):
         """
             Class for plotting four waves, three customized and one - resulting from their interference
                 @param plot_colors: list with four different colours for according waves
@@ -56,8 +56,15 @@ class WavePlot:
 
         # setting points for showing phase (point4_p) and group (point4_g) velocity 
         kw1 = dict(alpha=0.5, linestyle='none', marker='o')
-        self.point4_p,  = ax4.plot([], [], 'r', **kw1)
-        self.point4_g,  = ax4.plot([], [], 'b', **kw1)
+
+        self.point4_p, = ax4.plot([], [], 'r', **kw1)
+
+        # a dot for group velocity moving in the y-axis
+        self.point4_g_mv, = ax4.plot([], [], 'blue', **kw1)
+
+        # a dot for group velocity with constant y-axis value
+        self.point4_g_st, = ax4.plot([], [], 'black', **kw1)
+
 
     def pin_window(self, window):
         self.win = window
@@ -94,42 +101,14 @@ class WavePlot:
         y3 = self.A*np.cos(k3 * self.x - w3 * t)
 
         sum_y = y1 + y2 + y3
-        
-        # self.w_c = w1+w2+w3
-        # self.k_c = k1+k2+k3
 
-        # # dw = w_current - w_previous
-        # self.dw = self.w_c - self.w_p
-        # self.dk = self.k_c - self.k_p
-
-        # # phase velocity
-        # if self.k_c != 0: 
-        #     v_p = self.w_c/self.k_c
-        #     point_p = v_p*t
-        #     if point_p > self.max_x:
-        #         point_p -= self.max_x_p
-        #         self.max_x_p += self.max_x
-        # else:
-        #     point_p = 0
-
-        point_p = 0
-
-        # if self.dk != 0:
-        #     v_g = self.dw/self.dk
-        #     point_g = v_g*t
-        #     if point_g>self.max_x:
-        #         point_g -= self.max_x
-        #         self.max_x_g+=self.max_x
-        # else:
-        #     point_g = 1
-
-        # TODO: calculating group velocity
         if not w1 and not w2 and not w3:
             v_g = 0
         else:
             v_g = calc_group_vel(w1, w2, w3, k1, k2, k3)
 
         point_g = (v_g*t) % self.max_x
+        y_val = np.searchsorted(self.x, point_g)
 
         # TODO: changes
         new_params = [w1, w2, w3, k1, k2, k3]
@@ -139,13 +118,18 @@ class WavePlot:
             self.curr_y = sum_y[self.idx_y_vel_g]
             self.min_idx = 0
         else:
-
             absolute_val_array = get_array(sum_y, self.curr_y, self.min_idx, 3, 10)
             self.min_idx = absolute_val_array.argmin()
-            print(self.min_idx)
+            #print(f"Previous: {self.curr_val}")
             self.curr_val = sum_y[self.min_idx]
-            print(self.curr_val)
-            print(np.array(sum_y))
+            print(f"Idx: {self.min_idx}")
+            print(sum_y[self.min_idx-5: self.min_idx+5])
+            print(f"Current value = {self.curr_val}")
+        point_p = self.x[self.min_idx%len(self.x)]
+
+
+
+
         #     while i < 10:
         #         if sum_y[self.idx_y_vel_g] == self.curr_y:
         #             break    
@@ -157,11 +141,11 @@ class WavePlot:
 
         self.previous_params = new_params
         self.min_idx = self.min_idx%len(self.x)
-        if k1+k2+k3 == 0:
-            point_p = 0
-        else:
-            point_p = t*(w1+w2+w3/(k1+k2+k3))
-        #point_p = self.x[self.min_idx]   
+        # if k1+k2+k3 == 0:
+        #     point_p = 0
+        # else:
+        #     point_p = t*(w1+w2+w3/(k1+k2+k3))
+        point_p = self.x[self.min_idx]   
 
         # setting data for all waves
         self.line1.set_data(self.x, y1)
@@ -169,8 +153,10 @@ class WavePlot:
         self.line3.set_data(self.x, y3)
         self.line4.set_data(self.x, sum_y)
 
+        #self.point4_p_mv.set_data(point_p, sum_y[y_val])
         self.point4_p.set_data(point_p, 0)
-        self.point4_g.set_data(point_g, 0)
+        self.point4_g_mv.set_data(point_g, sum_y[y_val])
+        self.point4_g_st.set_data(point_g, 0)
 
         return self.line1, self.line2, self.line3, self.line4, self.point4_p
 
@@ -185,7 +171,7 @@ def get_array(arr, value, idx, interval, fill_val):
         end = idx - interval
         result_arr[beg+1:end] = fill_val
     else:
-        result_arr[:idx+1] = fill_val
+        result_arr[:idx] = fill_val
         # result_arr[:idx - interval] = fill_val
         result_arr[idx + interval+1:] = fill_val
     return result_arr
