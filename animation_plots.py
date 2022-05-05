@@ -20,17 +20,7 @@ class WavePlot:
         self.A = A
         self.colors = plot_colors
         self.y_axis_lim = y_axis_lim
-        self.w_p, self.k_p = 0, 0
         self.max_x = max_x
-        self.max_x_p = max_x
-        self.max_x_g = max_x
-
-        # TODO: changes
-        self.changed_params = True      # indicates whether any parameters: w or k were changed during given iteration
-        self.previous_params = [0, 0, 0, 0, 0, 0]
-        self.curr_y = 0
-        self.idx_y_vel_g = 0
-        self.min_idx = 0
         self.add_lines(y_lim_times)
 
     def add_lines(self, y_lim_times):
@@ -102,7 +92,7 @@ class WavePlot:
 
         sum_y = y1 + y2 + y3
 
-        if not w1 and not w2 and not w3:
+        if (not w1 and not w2 and not w3) or (not k1 and not k2 and not k3):
             v_g = 0
         else:
             v_g = calc_group_vel(w1, w2, w3, k1, k2, k3)
@@ -110,71 +100,19 @@ class WavePlot:
         point_g = (v_g*t) % self.max_x
         y_val = np.searchsorted(self.x, point_g)
 
-        # TODO: changes
-        new_params = [w1, w2, w3, k1, k2, k3]
-        self.just_changed = not np.array_equal(self.previous_params, new_params)
-        print(f"{t}, {self.just_changed}")
-        if self.just_changed:
-            self.curr_y = sum_y[self.idx_y_vel_g]
-            self.min_idx = 0
-        else:
-            absolute_val_array = get_array(sum_y, self.curr_y, self.min_idx, 3, 10)
-            self.min_idx = absolute_val_array.argmin()
-            #print(f"Previous: {self.curr_val}")
-            self.curr_val = sum_y[self.min_idx]
-            print(f"Idx: {self.min_idx}")
-            print(sum_y[self.min_idx-5: self.min_idx+5])
-            print(f"Current value = {self.curr_val}")
-        point_p = self.x[self.min_idx%len(self.x)]
-
-
-
-
-        #     while i < 10:
-        #         if sum_y[self.idx_y_vel_g] == self.curr_y:
-        #             break    
-        #         self.idx_y_vel_g += 1
-        #         i+=1
-        #     if self.idx_y_vel_g == len(sum_y):
-        #         self.idx_y_vel_g = 0
-        #     self.curr_y = sum_y[self.idx_y_vel_g]
-
-        self.previous_params = new_params
-        self.min_idx = self.min_idx%len(self.x)
-        # if k1+k2+k3 == 0:
-        #     point_p = 0
-        # else:
-        #     point_p = t*(w1+w2+w3/(k1+k2+k3))
-        point_p = self.x[self.min_idx]   
-
         # setting data for all waves
         self.line1.set_data(self.x, y1)
         self.line2.set_data(self.x, y2)
         self.line3.set_data(self.x, y3)
         self.line4.set_data(self.x, sum_y)
 
-        #self.point4_p_mv.set_data(point_p, sum_y[y_val])
+        point_p = 0
         self.point4_p.set_data(point_p, 0)
+
         self.point4_g_mv.set_data(point_g, sum_y[y_val])
         self.point4_g_st.set_data(point_g, 0)
 
         return self.line1, self.line2, self.line3, self.line4, self.point4_p
-
-def get_array(arr, value, idx, interval, fill_val):
-    result_arr = np.abs(arr - value)
-    if idx-interval < 0:
-        beg = idx + interval
-        end = len(arr)+idx - interval
-        result_arr[beg+1:end] = fill_val
-    elif idx + interval >= len(arr):
-        beg = interval + idx - len(arr)
-        end = idx - interval
-        result_arr[beg+1:end] = fill_val
-    else:
-        result_arr[:idx] = fill_val
-        # result_arr[:idx - interval] = fill_val
-        result_arr[idx + interval+1:] = fill_val
-    return result_arr
 
 
 def calc_group_vel(w1, w2, w3, k1, k2, k3):

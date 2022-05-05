@@ -17,7 +17,7 @@ class WaveAnimation:
         canvas.get_tk_widget().place(x=0*SIZE, y=0*SIZE)
         self.add_scales()
         self.add_example_buttons()
-        #TODO: change below prepoption
+
         self.sel_option = PrepOption(0, 0, 0, 0, 0, 0, 0)
 
     def add_scales(self, min_wave_v=-1.0, max_wave_v=1.0, min_ang_freq=-1.0, max_ang_freq=1.0):
@@ -66,7 +66,7 @@ class WaveAnimation:
         option1 = PrepOption(-1, 1, 2, 2, 1, 1, 1)
         option2 = PrepOption(6, 1, 2, 2, 1, 1, 2)
         option3 = PrepOption(1, 1, 2, 2, 0, 0, 3)
-        
+
         # button 0 used for custom settings through scales
         text0 = "Custom parameters"
         text1 = f"k1  = {option1.wave_v1} \tk2  = {option1.wave_v2} \tk3  = {option1.wave_v3} \nw1 = {option1.ang_freq1} \tw2 = {option1.ang_freq2} \tw3 = {option1.ang_freq3}"
