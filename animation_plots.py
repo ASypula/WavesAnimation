@@ -1,9 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-import sys
-np.set_printoptions(threshold=sys.maxsize)
-
 class WavePlot:
     def __init__(self, plot_colors, A=1, y_axis_lim=[-1.1, 1.1], y_lim_times=3, max_x=30):
         """
@@ -47,13 +44,14 @@ class WavePlot:
         # setting points for showing phase (point4_p) and group (point4_g) velocity 
         kw1 = dict(alpha=0.5, linestyle='none', marker='o')
 
-        self.point4_p, = ax4.plot([], [], 'r', **kw1)
-
         # a dot for group velocity moving in the y-axis
         self.point4_g_mv, = ax4.plot([], [], 'blue', **kw1)
 
         # a dot for group velocity with constant y-axis value
-        self.point4_g_st, = ax4.plot([], [], 'black', **kw1)
+        self.point4_g_st, = ax4.plot([], [], 'blue', **kw1)
+
+        self.point4_p_mv, = ax4.plot([], [], 'black', **kw1)
+        self.point4_p_st, = ax4.plot([], [], 'black', **kw1)
 
 
     def pin_window(self, window):
@@ -67,22 +65,22 @@ class WavePlot:
 
         # taking waves' w and k from the scales if custom options selected
         if self.win.sel_option.value == 0:
-            w1 = self.win.ang_freq_scale1.get()
-            w2 = self.win.ang_freq_scale2.get()
-            w3 = self.win.ang_freq_scale3.get()
             k1 = self.win.wave_v_scale1.get()
             k2 = self.win.wave_v_scale2.get()
             k3 = self.win.wave_v_scale3.get()
+            w1 = self.win.ang_freq_scale1.get()
+            w2 = self.win.ang_freq_scale2.get()
+            w3 = self.win.ang_freq_scale3.get()
 
 
         # taking waves' w and k from the selected preset option
         else:
-            w1 = self.win.sel_option.ang_freq1
-            w2 = self.win.sel_option.ang_freq2
-            w3 = self.win.sel_option.ang_freq3
             k1 = self.win.sel_option.wave_v1
             k2 = self.win.sel_option.wave_v2
             k3 = self.win.sel_option.wave_v3
+            w1 = self.win.sel_option.ang_freq1
+            w2 = self.win.sel_option.ang_freq2
+            w3 = self.win.sel_option.ang_freq3
       
         dt = 0.1
         t = i * dt
@@ -94,11 +92,16 @@ class WavePlot:
 
         if (not w1 and not w2 and not w3) or (not k1 and not k2 and not k3):
             v_g = 0
+            v_p = 0
         else:
-            v_g = calc_group_vel(w1, w2, w3, k1, k2, k3)
+            v_g = calc_group_vel([w1, w2, w3], [k1, k2, k3])
+            v_p = calc_phase_vel([w1, w2, w3], [k1, k2, k3])
 
         point_g = (v_g*t) % self.max_x
         y_val = np.searchsorted(self.x, point_g)
+
+        point_p = (v_p*t) % self.max_x
+        y_val_p = np.searchsorted(self.x, point_p)
 
         # setting data for all waves
         self.line1.set_data(self.x, y1)
@@ -106,21 +109,31 @@ class WavePlot:
         self.line3.set_data(self.x, y3)
         self.line4.set_data(self.x, sum_y)
 
-        point_p = 0
-        self.point4_p.set_data(point_p, 0)
+        self.point4_p_mv.set_data(point_p, sum_y[y_val_p])
+        self.point4_p_st.set_data(point_p, 0)
 
         self.point4_g_mv.set_data(point_g, sum_y[y_val])
         self.point4_g_st.set_data(point_g, 0)
 
-        return self.line1, self.line2, self.line3, self.line4, self.point4_p
+        return self.line1, self.line2, self.line3, self.line4,
 
 
-def calc_group_vel(w1, w2, w3, k1, k2, k3):
+def calc_group_vel(w_arr, k_arr):
     """ w(k) = ak + b ; a - group velocity"""
-    w = np.array([w1, w2, w3])
-    k = np.array([k1, k2, k3])
+    w = np.array(w_arr)
+    k = np.array(k_arr)
     a, b = np.polyfit(k, w, 1)
     return a
+
+
+def calc_phase_vel(w_arr, k_arr):
+    i, count, sum_v = 0, 0, 0
+    while i < len(w_arr):
+        if not k_arr[i] == 0:
+            sum_v += w_arr[i]/k_arr[i]
+            count += 1
+        i += 1
+    return sum_v/count
 
 
 class PrepOption:

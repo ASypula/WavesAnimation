@@ -7,9 +7,10 @@ colors = ["lightblue", "slateblue", "lightslategray", "black"]
 
 # delay between frames in milliseconds
 interval = 100
+plot_size = (8, 6)
 
 anim_plot = WavePlot(colors)
-anim_window = WaveAnimation(anim_plot)
+anim_window = WaveAnimation(anim_plot, plot_size)
 
 loop_frames = []
 for i in range(3):
